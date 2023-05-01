@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rotating Cube Animation with Hypnotic Star Field</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #000;
+		}
+		canvas {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+	<canvas id="canvas"></canvas>
+
+	<script>
+		var scene = new THREE.Scene();
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+		var renderer = new THREE.WebGLRenderer({canvas: document.getElementById("canvas")});
+		renderer.setSize(window.innerWidth, window.innerHeight);
+
+		var geometry = new THREE.BoxGeometry();
+		var material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+		var cube = new THREE.Mesh(geometry, material);
+		scene.add(cube);
+
+		camera.position.z = 5;
+
+		var starGeometry = new THREE.BufferGeometry();
+		var starPositions = new Float32Array(3000);
+		var starColors = new Float32Array(3000);
+		var starSizes = new Float32Array(3000);
+		for (var i = 0; i < starPositions.length; i++) {
+			starPositions[i] = (Math.random() - 0.5) * 1000;
+			starColors[i] = Math.random() * 0xffffff;
+			starSizes[i] = Math.random() * 5 + 1;
+		}
+		starGeometry.addAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+		starGeometry.addAttribute('color', new THREE.BufferAttribute(starColors, 3));
+		starGeometry.addAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+		var starMaterial = new THREE.PointsMaterial({vertexColors: THREE.VertexColors, sizeAttenuation: false});
+		var starField = new THREE.Points(starGeometry, starMaterial);
+		scene.add(starField);
+
+		function animate() {
+			requestAnimationFrame(animate);
+
+			cube.rotation.x += 0.01;
+			cube.rotation.y += 0.01;
+
+			starField.rotation.x += 0.0005;
+			starField.rotation.y += 0.0005;
+
+			renderer.render(scene, camera);
+		}
+
+		animate();
+	</script>
+</body>
+</html>

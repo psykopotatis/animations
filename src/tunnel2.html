@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rotating Tunnel Animation</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #000;
+		}
+		canvas {
+			display: block;
+			margin: auto;
+			transform: perspective(1000px) rotateX(30deg);
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		var numRings = 10;
+		var ringWidth = 30;
+		var ringSpacing = 10;
+		var ringRadius = Math.min(canvas.width, canvas.height) / 2 - numRings * (ringWidth + ringSpacing) / 2;
+
+		var startAngle = 0;
+		var endAngle = 2 * Math.PI;
+		var increment = Math.PI / 360;
+
+		var colorIndex = 0;
+		var colors = [
+			"#FF4136",
+			"#0074D9",
+			"#2ECC40",
+			"#FFDC00",
+			"#B10DC9",
+			"#FF851B",
+			"#7FDBFF"
+		];
+
+		function drawRing(angleOffset) {
+			ctx.beginPath();
+			ctx.arc(canvas.width / 2, canvas.height / 2, ringRadius, startAngle + angleOffset, endAngle + angleOffset);
+			ctx.lineWidth = ringWidth;
+			ctx.strokeStyle = colors[colorIndex % colors.length];
+			ctx.stroke();
+
+			colorIndex++;
+		}
+
+		function animate() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			for (var i = 0; i < numRings; i++) {
+				drawRing(i * increment);
+			}
+
+			requestAnimationFrame(animate);
+		}
+
+		animate();
+	</script>
+</body>
+</html>

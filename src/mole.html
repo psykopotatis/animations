@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Whack-a-Mole</title>
+    <style>
+        #game {
+            width: 300px;
+            height: 300px;
+            border: 1px solid black;
+            position: relative;
+        }
+        .mole {
+            width: 50px;
+            height: 50px;
+            background-image: url('https://i.imgur.com/HjU6vcJ.png');
+            position: absolute;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Whack-a-Mole Game</h1>
+<p>Click on the moles as quickly as you can!</p>
+<p>Your score: <span id="score">0</span></p>
+<div id="game"></div>
+
+<script>
+    var gameDiv = document.getElementById("game");
+    var score = 0;
+
+    // Set up the moles
+    var moles = [];
+    for (var i = 0; i < 9; i++) {
+        var moleDiv = document.createElement("div");
+        moleDiv.className = "mole";
+        moleDiv.style.left = (i % 3) * 100 + "px";
+        moleDiv.style.top = Math.floor(i / 3) * 100 + "px";
+        gameDiv.appendChild(moleDiv);
+        moles.push(moleDiv);
+    }
+
+    // Start the game
+    var startTime = new Date().getTime();
+    var timer = setInterval(function() {
+        // Show a random mole
+        var moleIndex = Math.floor(Math.random() * 9);
+        moles[moleIndex].style.display = "block";
+
+        // Hide the mole after a random time
+        setTimeout(function() {
+            moles[moleIndex].style.display = "none";
+        }, Math.random() * 1000);
+
+        // End the game after 30 seconds
+        var currentTime = new Date().getTime();
+        if (currentTime - startTime > 30000) {
+            clearInterval(timer);
+            gameDiv.innerHTML = "<h2>Game over! Your score was " + score + ".</h2>";
+        }
+    }, 1000);
+
+    // Add click event listeners to the moles
+    for (var i = 0; i < 9; i++) {
+        moles[i].addEventListener("click", function() {
+            if (this.style.display == "block") {
+                score++;
+                document.getElementById("score").innerHTML = score;
+            }
+        });
+    }
+</script>
+</body>
+</html>

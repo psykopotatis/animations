@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trace Elements Visualization</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Define the dimensions of the SVG canvas
+      const width = 1500;
+      const height = 700;
+
+      // Define the margin for the visualization
+      const margin = {
+        top: 20,
+        bottom: 50,
+        left: 50,
+        right: 20,
+      };
+
+      // Calculate the inner dimensions of the visualization
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      // Append the SVG canvas to the body of the HTML document
+      const svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Load the JSON data and filter the trace elements with type "DB"
+      d3.json("data.json").then(function (data) {
+        const dbTraceElements = data.traceElements.filter(
+          (te) => te.type === "DB"
+        );
+
+        // Group the trace elements by location
+        const locationCounts = d3.group(dbTraceElements, (te) => te.location);
+
+        // Sort the location counts by count descending
+        const sortedLocationCounts = Array.from(locationCounts, ([key, value]) => ({
+          location: key,
+          count: value.length,
+        })).sort((a, b) => d3.descending(a.count, b.count));
+
+        // Create the x scale for the location names
+        const xScale = d3
+          .scaleBand()
+          .domain(sortedLocationCounts.map((lc) => lc.location))
+          .range([margin.left, innerWidth + margin.left])
+          .padding(0.1);
+
+        // Create the y scale for the count values
+        const yScale = d3
+          .scaleLinear()
+          .domain([0, d3.max(sortedLocationCounts, (lc) => lc.count)])
+          .range([innerHeight + margin.top, margin.top]);
+
+        // Append the x axis to the SVG canvas
+        svg
+          .append("g")
+          .attr("transform", `translate(0, ${innerHeight + margin.top})`)
+          .call(d3.axisBottom(xScale))
+          .selectAll("text")
+          .attr("transform", "rotate(-90)")
+          .attr("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", ".15em");
+
+        // Append the y axis to the SVG canvas
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left}, 0)`)
+          .call(d3.axisLeft(yScale));
+
+        // Append the bars to the SVG canvas
+        svg
+          .selectAll("rect")
+          .data(sortedLocationCounts)
+          .enter()
+          .append("rect")
+          .attr("x", (lc) => xScale(lc.location))
+          .attr("y", (lc) => yScale(lc.count))
+          .attr("width", xScale.bandwidth())
+          .attr("height", (lc) => innerHeight + margin.top - yScale(lc.count))
+          .attr("fill", "steelblue");
+      });
+    </script>
+  </body>
+</html>

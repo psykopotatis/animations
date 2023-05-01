@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Particle Animation Example</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    // Get the canvas element and its context
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    // Set the canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Create an array of particles
+    var particles = [];
+    for (var i = 0; i < 50; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: Math.random() * 10 - 5,
+            vy: Math.random() * 10 - 5,
+            radius: Math.random() * 10 + 5
+        });
+    }
+
+    // Draw the particles
+    function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.fill();
+        }
+    }
+
+    // Update the particles' positions
+    function updateParticles() {
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < -50) p.x = canvas.width + 50;
+            if (p.y < -50) p.y = canvas.height + 50;
+            if (p.x > canvas.width + 50) p.x = -50;
+            if (p.y > canvas.height + 50) p.y = -50;
+        }
+    }
+
+    // Set up the animation loop
+    function loop() {
+        drawParticles();
+        updateParticles();
+        requestAnimationFrame(loop);
+    }
+
+    // Start the animation loop
+    loop();
+</script>
+</body>
+</html>
