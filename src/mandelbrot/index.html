@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mandelbrot Fractal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<script id="vertexShader" type="x-shader/x-vertex">
+  void main() {
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+</script>
+
+<script id="fragmentShader" type="x-shader/x-fragment">
+  precision highp float;
+
+  uniform float zoom;
+  uniform float offsetX;
+  uniform float offsetY;
+  uniform int maxIterations;
+
+  void main() {
+    vec2 c = vec2(
+      (gl_FragCoord.x - offsetX) / zoom - 2.0,
+      (gl_FragCoord.y - offsetY) / zoom - 2.0
+    );
+    vec2 z = vec2(0.0, 0.0);
+    int i;
+    for (i = 0; i < maxIterations; i++) {
+      vec2 z2 = vec2(
+        z.x * z.x - z.y * z.y,
+        2.0 * z.x * z.y
+      );
+      z = vec2(z2.x + c.x, z2.y + c.y);
+      if (length(z) > 2.0) break;
+    }
+    float color = float(i) / float(maxIterations);
+    gl_FragColor = vec4(vec3(color), 1.0);
+  }
+</script>
+
+
+<canvas id="canvas" width="800" height="600"></canvas>
+<script src="script.js"></script>
+</body>
+</html>
